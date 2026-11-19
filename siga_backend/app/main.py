@@ -96,7 +96,7 @@ async def root():
         "gateway": "active"
     }
 
-@app.route("/health", methods=["GET", "HEAD", "OPTIONS"])
+@app.get("/health")
 async def health():
     """Health check endpoint - accepts GET, HEAD, OPTIONS"""
     return {
