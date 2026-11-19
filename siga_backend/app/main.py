@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 from pydantic import BaseModel
 import logging
+import os
 import uuid
 
 from .core.config import settings
@@ -30,14 +31,27 @@ app = FastAPI(
     redoc_url="/redoc" if settings.debug else None,
 )
 
-# CORS para desarrollo
+# CORS configurado para desarrollo y producción (Railway/Vercel)
+# Lee CORS_ORIGINS del entorno (comma-separated) o usa valores por defecto
+allowed_origins_str = os.getenv("CORS_ORIGINS", "")
+if allowed_origins_str:
+    allow_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+else:
+    # Valores por defecto para desarrollo local
+    allow_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001"
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173",
-    "http://localhost:5174", "http://127.0.0.1:5174",
-    "http://localhost:3000", "http://127.0.0.1:3000",
-    "http://localhost:3001", "http://127.0.0.1:3001"
-    ],
+    allow_origins=allow_origins,
     allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
