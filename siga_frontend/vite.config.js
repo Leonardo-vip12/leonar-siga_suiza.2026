@@ -12,24 +12,11 @@ export default defineConfig({
       usePolling: true,
     },
     host: true, // needed for docker
-    proxy: {
-      '/api': {
-        target: 'http://siga-core:8000',
-        changeOrigin: true
-      },
-      '/auth': {
-        target: 'http://siga-core:8000',
-        changeOrigin: true
-      },
-      '/core': {
-        target: 'http://siga-core:8000',
-        changeOrigin: true
-      },
-      '/ws': {
-        target: 'http://siga-core:8000',
-        changeOrigin: true,
-        ws: true
-      }
-    }
-  }
+  },
+  // Configurar proxy solo si no hay variables de Railway
+  // En producción (Vercel + Railway), usamos las env vars directamente
+  define: {
+    'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || `https://${process.env.RAILWAY_PUBLIC_DOMAIN || 'localhost'}:8000`),
+    'process.env.VITE_WS_URL': JSON.stringify(process.env.VITE_WS_URL || `wss://${process.env.RAILWAY_PUBLIC_DOMAIN || 'localhost'}:8000/ws`),
+  },
 })
