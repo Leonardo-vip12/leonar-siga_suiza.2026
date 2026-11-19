@@ -31,13 +31,16 @@ app = FastAPI(
     redoc_url="/redoc" if settings.debug else None,
 )
 
-# CORS configurado para desarrollo y producción (Railway/Vercel)
-# Lee CORS_ORIGINS del entorno (comma-separated) o usa valores por defecto
+# CORS configurado usando orígenes explícitos desde variable de entorno
+# CORS_ORIGINS: comma-separated list (ej: "http://localhost:5173,https://tu-app.vercel.app")
+# Si está vacío, usa una lista segura que incluye dominios comunes de desarrollo
+# y patrones para Vercel/Railway al desplegar
 allowed_origins_str = os.getenv("CORS_ORIGINS", "")
 if allowed_origins_str:
     allow_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
 else:
-    # Valores por defecto para desarrollo local
+    # Por defecto: permite dominios de desarrollo comunes
+    # Al desplegar en Vercel/Railway, establece CORS_ORIGINS en el panel de variables
     allow_origins = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
@@ -46,16 +49,23 @@ else:
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:3001",
-        "http://127.0.0.1:3001"
+        "http://127.0.0.1:3001",
+        # Lo siguiente se sobreescribirá con CORS_ORIGINS en producción:
+        # "https://tu-app.vercel.app",
+        # "https://tu-app.up.railway.app"
     ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
-    allow_origin_regex=r"https?://.*",
+    # Ya no usamos regex para evitar problemas de matching;
+    # en su lugar usamos origenes explícitos desde CORS_ORIGINS env var
+    # allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    # Exponer headers necesarios para auth
+    expose_headers=["X-Request-ID", "Authorization"],
 )
 
 # === MIDDLEWARE PARA LOGGING Y TRACING ===
