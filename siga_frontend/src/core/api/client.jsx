@@ -76,8 +76,9 @@ class SIGAApiClient {
 
   // Auth endpoints
   async login(email, password) {
-    return this.request(`/auth/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
-      method: 'POST'
+    return this.request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
     });
   }
 
@@ -86,8 +87,9 @@ class SIGAApiClient {
   }
 
   async register(email, password, fullName) {
-    return this.request(`/auth/register?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&full_name=${encodeURIComponent(fullName)}`, {
-      method: 'POST'
+    return this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, full_name: fullName })
     });
   }
 
