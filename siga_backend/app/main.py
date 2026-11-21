@@ -29,7 +29,7 @@ class CoreSettings(BaseSettings):
     
     # Security
     token_expire_minutes: int = 30
-    module_token_expire_hours: = 24
+    module_token_expire_hours: int = 24
     
     # NATS Event Bus
     enable_nats: bool = Field(default=True, description="Habilitar NATS Event Bus")
