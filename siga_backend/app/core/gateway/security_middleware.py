@@ -25,7 +25,7 @@ class SecurityMiddleware:
         # Rutas públicas que no requieren autenticación
         public_paths = {
             "/", "/health", "/core/status", "/core/modules",
-            "/docs", "/redoc", "/openapi.json"
+            "/auth/login", "/auth/me", "/docs", "/redoc", "/openapi.json"
         }
         
         if path in public_paths:
